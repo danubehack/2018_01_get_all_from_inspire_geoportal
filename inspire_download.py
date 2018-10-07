@@ -1,3 +1,4 @@
+import sys
 import json
 import requests
 import re
@@ -5,7 +6,7 @@ level2=[]
 levels4=[]
 file = open('pokus.txt','a') 
 session = requests.session()
-url = 'http://inspire-geoportal.ec.europa.eu/solr/select?wt=json&q=(*%3A*%5E1.0%20OR%20(interoperabilityAspect%3A(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)%5E3.0%20OR%20interoperabilityAspect%3A(LAYER_MATCHING_DATA_IS_AVAILABLE)%5E2.0%20OR%20interoperabilityAspect%3A(*)%5E1.0))&fq=sourceMetadataResourceLocator%3A*&fq=resourceType%3A(dataset%20OR%20series)&fl=id%2CresourceTitle%2CmemberStateCountryCode%2CinspireTheme%2CisDw%3Aquery(%24isDwQ)%2CisVw%3Aquery(%24isVwQ)&isDwQ=interoperabilityAspect%3A(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)&isVwQ=interoperabilityAspect%3A(LAYER_MATCHING_DATA_IS_AVAILABLE)&sort=score%20desc%2CresourceTitle%20asc&start=0&rows=100&callback=?&json.wrf=processData_dtResults&fq=memberStateCountryCode%3A%22nl%22&fq=priorityDataset%3A*&_=1538831009749'
+url = 'http://inspire-geoportal.ec.europa.eu/solr/select?wt=json&q=(*%3A*%5E1.0%20OR%20(interoperabilityAspect%3A(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)%5E3.0%20OR%20interoperabilityAspect%3A(LAYER_MATCHING_DATA_IS_AVAILABLE)%5E2.0%20OR%20interoperabilityAspect%3A(*)%5E1.0))&fq=sourceMetadataResourceLocator%3A*&fq=resourceType%3A(dataset%20OR%20series)&fl=id%2CresourceTitle%2CmemberStateCountryCode%2CinspireTheme%2CisDw%3Aquery(%24isDwQ)%2CisVw%3Aquery(%24isVwQ)&isDwQ=interoperabilityAspect%3A(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)&isVwQ=interoperabilityAspect%3A(LAYER_MATCHING_DATA_IS_AVAILABLE)&sort=score%20desc%2CresourceTitle%20asc&start=0&rows=100&callback=?&json.wrf=processData_dtResults&fq=memberStateCountryCode%3A%22'+sys.argv[1]+'%22&fq=priorityDataset%3A*&_=1538831009749'
 ans = session.get(url)
 #print(ans.text)
 j = json.loads(ans.text.replace('processData_dtResults(','').replace(')',''))
