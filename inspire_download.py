@@ -68,22 +68,27 @@ for level4 in levels4:
         if str(j['DownloadServiceSpatialDataSetResource']['SpatialDataSetDownloadLink'])[0] !='[':
    
             url=j['DownloadServiceSpatialDataSetResource']['SpatialDataSetDownloadLink']['SpatialDataSetDownloadResourceLocator']['DownloadResourceLocator']['URL']
-            
-            ans5=session.get(url)
-            slozka=sys.argv[1]
-            soubor=url.rsplit('/', 1)[-1]
-            fd = open(slozka+'/'+soubor, 'wb')
-            fd.write(ans5.content)
-            fd.close()
-            if soubor.rsplit('.', 1)[-1]=='zip':
-                zip_ref = zipfile.ZipFile(slozka+'/'+soubor, 'r')
-                zip_ref.extractall(slozka+'/'+soubor.rsplit('.', 1)[0])
-                zip_ref.close()
-                zip_soubors.append(slozka+'/'+soubor.rsplit('.', 1)[0])
-            elif soubor.rsplit('.', 1)[-1]=='gml':
-                bash.write('ogr2ogr -f "PostgreSQL" PG:"host=localhost port=5432 dbname=hackathon schemas=inspire user=postgres password=postgres" '+ slozka+'/'+soubor+' -progress -oo GML_ATTRIBUTES_TO_OGR_FIELDS=YES -nln '+soubor.replace('.','_').replace('-','_')+' \n')
-            else:    
-                pass
+            try:
+                ans5=session.get(url)
+                slozka=sys.argv[1]
+                soubor=url.rsplit('/', 1)[-1]
+                fd = open(slozka+'/'+soubor, 'wb')
+                fd.write(ans5.content)
+                fd.close()
+                if soubor.rsplit('.', 1)[-1]=='zip':
+                    try:            
+                        zip_ref = zipfile.ZipFile(slozka+'/'+soubor, 'r')
+                        zip_ref.extractall(slozka+'/'+soubor.rsplit('.', 1)[0])
+                        zip_ref.close()
+                        zip_soubors.append(slozka+'/'+soubor.rsplit('.', 1)[0])
+                    except zipfile.BadZipFile:
+                        print('ZIP nfunguje: '+slozka+'/'+soubor)
+                elif soubor.rsplit('.', 1)[-1]=='gml':
+                    bash.write('ogr2ogr -f "PostgreSQL" PG:"host=localhost port=5432 dbname=hackathon schemas=inspire user=postgres password=postgres" '+ slozka+'/'+soubor+' -progress -oo GML_ATTRIBUTES_TO_OGR_FIELDS=YES -nln '+soubor.replace('.','_').replace('-','_')+' \n')
+                else:    
+                    pass
+            except:
+                print('URL nefunguje: '+url)
 
         else:
             ii=0
@@ -96,22 +101,28 @@ for level4 in levels4:
             for i in hh:
                 
                 url=j['DownloadServiceSpatialDataSetResource']['SpatialDataSetDownloadLink'][i]['SpatialDataSetDownloadResourceLocator']['DownloadResourceLocator']['URL']
-                
-                ans5=session.get(url)
-                slozka=sys.argv[1]
-                soubor=url.rsplit('/', 1)[-1]
-                fd = open(slozka+'/'+soubor, 'wb')
-                fd.write(ans5.content)
-                fd.close()
-                if soubor.rsplit('.', 1)[-1]=='zip':
-                    zip_ref = zipfile.ZipFile(slozka+'/'+soubor, 'r')
-                    zip_ref.extractall(slozka+'/'+soubor.rsplit('.', 1)[0])
-                    zip_ref.close()
-                    zip_soubors.append(slozka+'/'+soubor.rsplit('.', 1)[0])
-                elif soubor.rsplit('.', 1)[-1]=='gml':
-                    bash.write('ogr2ogr -f "PostgreSQL" PG:"host=localhost port=5432 dbname=hackathon schemas=inspire user=postgres password=postgres" '+ slozka+'/'+soubor+' -progress -oo GML_ATTRIBUTES_TO_OGR_FIELDS=YES -nln '+soubor.replace('.','_').replace('-','_')+' \n')
-                else:    
-                    pass
+                try:
+                    ans5=session.get(url)
+                    slozka=sys.argv[1]
+                    soubor=url.rsplit('/', 1)[-1]
+                    fd = open(slozka+'/'+soubor, 'wb')
+                    fd.write(ans5.content)
+                    fd.close()
+                    if soubor.rsplit('.', 1)[-1]=='zip':
+                        try:                    
+                        
+                            zip_ref = zipfile.ZipFile(slozka+'/'+soubor, 'r')
+                            zip_ref.extractall(slozka+'/'+soubor.rsplit('.', 1)[0])
+                            zip_ref.close()
+                            zip_soubors.append(slozka+'/'+soubor.rsplit('.', 1)[0])
+                        except zipfile.BadZipFile:
+                            print('ZIP nfunguje: '+slozka+'/'+soubor)
+                    elif soubor.rsplit('.', 1)[-1]=='gml':
+                        bash.write('ogr2ogr -f "PostgreSQL" PG:"host=localhost port=5432 dbname=hackathon schemas=inspire user=postgres password=postgres" '+ slozka+'/'+soubor+' -progress -oo GML_ATTRIBUTES_TO_OGR_FIELDS=YES -nln '+soubor.replace('.','_').replace('-','_')+' \n')
+                    else:    
+                        pass
+                except:
+                    print('URL nefunguje: '+url)
                    
     else:
         pass
