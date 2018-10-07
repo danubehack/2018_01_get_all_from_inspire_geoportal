@@ -17,5 +17,7 @@
 ## Results
 - Priority datasets portal scrapper written and offer users to launch it with country code argument
 ```bash
-python 
+python inspire_download.py sk
 ```
+
+
