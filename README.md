@@ -1,5 +1,5 @@
 # Get Geodata from INSPIRE Geoportal
-
+authors: Boris Kruzliak, Tomas Kliment
 ## Motivation
 - The current [INSPIRE Geoportal](http://inspire-geoportal.ec.europa.eu/) application offers options to download spatial datasets provided by EU member states within INSPIRE legislation framework. 
 - The data are organized by INSPIRE Spatial Data Themes and INSPIRE Priority Datasets categories.
