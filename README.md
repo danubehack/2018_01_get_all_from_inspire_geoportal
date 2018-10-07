@@ -1,4 +1,4 @@
-# Data@Geoportal.eu
+# Get Geodata from INSPIRE Geoportal
 
 ## Motivation
 - The current [INSPIRE Geoportal](http://inspire-geoportal.ec.europa.eu/) application offers options to download spatial datasets provided by EU member states within INSPIRE legislation framework. 
@@ -15,3 +15,7 @@
 - Research and academy
 
 ## Results
+- Priority datasets portal scrapper written and offer users to launch it with country code argument
+```bash
+python 
+```
