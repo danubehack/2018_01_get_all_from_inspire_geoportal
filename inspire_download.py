@@ -1,7 +1,13 @@
+import os
 import sys
 import json
 import requests
 import re
+import zipfile
+import glob
+bash = open(sys.argv[1]+'_bash.sh','a')
+if not os.path.exists(sys.argv[1]):
+    os.makedirs(sys.argv[1])
 level2=[]
 levels4=[]
 file = open('pokus.txt','a') 
@@ -54,7 +60,7 @@ for level in level2:
                 levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link4+'/'+level3.replace('../../../','')+'/?callback=parseResponse')
             else:
                 levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link3+'/'+level3.replace('../../','')+'/?callback=parseResponse')
-
+zip_soubors=[]
 for level4 in levels4:
     ans4 = session.get(level4)
     if ans4.text.find('SpatialDataSetDownloadLink')>-1:
@@ -64,9 +70,21 @@ for level4 in levels4:
             url=j['DownloadServiceSpatialDataSetResource']['SpatialDataSetDownloadLink']['SpatialDataSetDownloadResourceLocator']['DownloadResourceLocator']['URL']
             
             ans5=session.get(url)
-            fd = open('nl/'+url.rsplit('/', 1)[-1], 'wb')
+            slozka=sys.argv[1]
+            soubor=url.rsplit('/', 1)[-1]
+            fd = open(slozka+'/'+soubor, 'wb')
             fd.write(ans5.content)
             fd.close()
+            if soubor.rsplit('.', 1)[-1]=='zip':
+                zip_ref = zipfile.ZipFile(slozka+'/'+soubor, 'r')
+                zip_ref.extractall(slozka+'/'+soubor.rsplit('.', 1)[0])
+                zip_ref.close()
+                zip_soubors.append(slozka+'/'+soubor.rsplit('.', 1)[0])
+            elif soubor.rsplit('.', 1)[-1]=='gml':
+                bash.write('ogr2ogr -f "PostgreSQL" PG:"host=localhost port=5432 dbname=hackathon schemas=inspire user=postgres password=postgres" '+ slozka+'/'+soubor+' -progress -oo GML_ATTRIBUTES_TO_OGR_FIELDS=YES -nln '+soubor.replace('.','_').replace('-','_')+' \n')
+            else:    
+                pass
+
         else:
             ii=0
             hh=[]
@@ -80,9 +98,29 @@ for level4 in levels4:
                 url=j['DownloadServiceSpatialDataSetResource']['SpatialDataSetDownloadLink'][i]['SpatialDataSetDownloadResourceLocator']['DownloadResourceLocator']['URL']
                 
                 ans5=session.get(url)
-                fd = open('nl/'+url.rsplit('/', 1)[-1], 'wb')
+                slozka=sys.argv[1]
+                soubor=url.rsplit('/', 1)[-1]
+                fd = open(slozka+'/'+soubor, 'wb')
                 fd.write(ans5.content)
-                fd.close()                    
+                fd.close()
+                if soubor.rsplit('.', 1)[-1]=='zip':
+                    zip_ref = zipfile.ZipFile(slozka+'/'+soubor, 'r')
+                    zip_ref.extractall(slozka+'/'+soubor.rsplit('.', 1)[0])
+                    zip_ref.close()
+                    zip_soubors.append(slozka+'/'+soubor.rsplit('.', 1)[0])
+                elif soubor.rsplit('.', 1)[-1]=='gml':
+                    bash.write('ogr2ogr -f "PostgreSQL" PG:"host=localhost port=5432 dbname=hackathon schemas=inspire user=postgres password=postgres" '+ slozka+'/'+soubor+' -progress -oo GML_ATTRIBUTES_TO_OGR_FIELDS=YES -nln '+soubor.replace('.','_').replace('-','_')+' \n')
+                else:    
+                    pass
+                   
     else:
         pass
 
+for zip_soubor in zip_soubors :
+    for root, dirs, files in os.walk(zip_soubor):
+        for file in files:
+            if file.endswith(".shp"):
+                print(os.path.join(root, file))
+                bash.write('ogr2ogr -f "PostgreSQL" PG:"host=localhost port=5432 dbname=hackathon schemas=inspire user=postgres password=postgres" -nlt PROMOTE_TO_MULTI -unsetFieldWidth '+os.path.join(root, file)+'\n')     
+
+                
