@@ -5,7 +5,8 @@ import requests
 import re
 import zipfile
 import glob
-bash = open(sys.argv[1]+'_bash.sh','a')
+#bash = open(os.path.join(sys.argv[1],'ogr2ogr_bash.sh','a'))
+bash = open(sys.argv[1]+'_ogr2ogr_bash.sh','a')
 if not os.path.exists(sys.argv[1]):
     os.makedirs(sys.argv[1])
 level2=[]
@@ -21,11 +22,13 @@ for doc in i['docs']:
     f = json.loads(str(doc).replace('\'','\"'))
     #print(f['id'])
     if str(f).find('isDw')>-1:
+        print("Adding URL FOR: {}".format(f['id']))
         level2.append('http://inspire-geoportal.ec.europa.eu/resources'+f['id']+'/?callback=parseResponse')
     else:
         pass
-   
+print("Found {} downloadable links. Starting downloads ... ".format(len(level2)))
 for level in level2:
+    print("Openning level2 session for {}".format(level))
     ans2 = session.get(level)
     params=re.split('/', level.replace('http://inspire-geoportal.ec.europa.eu/resources/','').replace('?callback=parseResponse',''))    
    
@@ -62,6 +65,7 @@ for level in level2:
                 levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link3+'/'+level3.replace('../../','')+'/?callback=parseResponse')
 zip_soubors=[]
 for level4 in levels4:
+    print("Openning level4 session for {}".format(level))
     ans4 = session.get(level4)
     if ans4.text.find('SpatialDataSetDownloadLink')>-1:
         j = json.loads(ans4.text.replace('parseResponse(','').replace(');',''))
@@ -69,6 +73,7 @@ for level4 in levels4:
    
             url=j['DownloadServiceSpatialDataSetResource']['SpatialDataSetDownloadLink']['SpatialDataSetDownloadResourceLocator']['DownloadResourceLocator']['URL']
             try:
+                print("Downlaoding dataset from URL: {}".format(url))
                 ans5=session.get(url)
                 slozka=sys.argv[1]
                 soubor=url.rsplit('/', 1)[-1]
@@ -89,17 +94,13 @@ for level4 in levels4:
                     pass
             except:
                 print('URL nefunguje: '+url)
-
         else:
             ii=0
             hh=[]
             for level5 in j['DownloadServiceSpatialDataSetResource']['SpatialDataSetDownloadLink']:
                 hh.append(ii)            
                 ii=ii+1
-            
-                       
             for i in hh:
-                
                 url=j['DownloadServiceSpatialDataSetResource']['SpatialDataSetDownloadLink'][i]['SpatialDataSetDownloadResourceLocator']['DownloadResourceLocator']['URL']
                 try:
                     ans5=session.get(url)
