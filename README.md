@@ -15,9 +15,17 @@ authors: Boris Kruzliak, Tomas Kliment
 - Research and academy
 
 ## Results
-- Priority datasets portal scrapper written and offer users to launch it with country code argument
+- Priority and INSPIRE Data Themes datasets portal scrapper offeing users to launch it with country code and application type arguments.
+#### Download data from INSPIRE Geoportal Themes for Slovenia 
 ```bash
-python inspire_download.py sk
+python inspire_download.py -country SI -app themes
 ```
+
+#### Download data from INSPIRE Geoportal Priority datasets for Slovakia
+```bash
+python inspire_download.py -country SK -app priority
+
+```
+
 
 
