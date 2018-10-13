@@ -71,22 +71,21 @@ for level in level2:
         link4=link4+'/'+param4
     for param3 in params3:
         link3=link3+'/'+param3
-    j = json.loads(ans2.text.replace('parseResponse(','').replace(');',''))
-    if str(j['SpatialDataSetResource']['DownloadServiceDataSetMetadataLocator'])[0] !='[':
-        level3=j['SpatialDataSetResource']['DownloadServiceDataSetMetadataLocator']['URL']
-        if str(level3).find('../../../')>-1:
-            levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link4+'/'+level3.replace('../../../','')+'/?callback=parseResponse')
-        else:
-            levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link3+'/'+level3.replace('../../','')+'/?callback=parseResponse')        
-    else:
-        pocet_soub=0
-        for mess in j['SpatialDataSetResource']['DownloadServiceDataSetMetadataLocator']:
-            level3=j['SpatialDataSetResource']['DownloadServiceDataSetMetadataLocator'][pocet_soub]['URL']
-            pocet_soub=pocet_soub+1
+    resultDict = json.loads(ans2.text.replace('parseResponse(','').replace(');',''))
+    if 'SpatialDataSetResource' in resultDict:
+        if isinstance(resultDict['SpatialDataSetResource']['DownloadServiceDataSetMetadataLocator'],dict):
+            level3=resultDict['SpatialDataSetResource']['DownloadServiceDataSetMetadataLocator']['URL']
             if str(level3).find('../../../')>-1:
                 levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link4+'/'+level3.replace('../../../','')+'/?callback=parseResponse')
             else:
                 levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link3+'/'+level3.replace('../../','')+'/?callback=parseResponse')
+        elif isinstance(resultDict['SpatialDataSetResource']['DownloadServiceDataSetMetadataLocator'],list):
+            for mdURL in resultDict['SpatialDataSetResource']['DownloadServiceDataSetMetadataLocator']:
+                level3=mdURL['URL']
+                if str(level3).find('../../../')>-1:
+                    levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link4+'/'+level3.replace('../../../','')+'/?callback=parseResponse')
+                else:
+                    levels4.append('http://inspire-geoportal.ec.europa.eu/resources'+link3+'/'+level3.replace('../../','')+'/?callback=parseResponse')
 zip_soubors=[]
 for level4 in levels4:
     print("Openning level4 session for {}".format(level))
