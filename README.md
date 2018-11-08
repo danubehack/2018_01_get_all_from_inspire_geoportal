@@ -30,6 +30,6 @@ python inspire_download.py -country SI -app themes
 python inspire_download.py -country SK -app priority
 
 ```
-
+- Video: https://youtu.be/1-1589e1_xQ
 
 
